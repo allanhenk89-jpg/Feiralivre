@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feira Livre Digital - Plataforma Unificada</title>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; color: #333; }
+        header { text-align: center; margin-bottom: 20px; }
+        h1 { color: #2e7d32; margin: 5px 0; }
+        .nav-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; border: none; background: #ddd; font-weight: bold; border-radius: 5px; }
+        .tab-btn.active { background: #2e7d32; color: white; }
+        .view-section { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        .view-section.active { display: block; }
+        button { background: #2e7d32; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1b5e20; }
+        .produto-card { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .log-box { background: #1e1e1e; color: #00ff00; padding: 10px; font-family: monospace; border-radius: 5px; height: 150px; overflow-y: auto; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🛒 Feira Livre Digital</h1>
+        <p>Plataforma de Pedidos, Pix e Alertas em Tempo Real</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="trocarVisao('consumidor')">Visão Consumidor</button>
+        <button class="tab-btn tab-feirante" onclick="trocarVisao('feirante')">Painel do Feirante</button>
+    </div>
+
+    <!-- SEÇÃO CONSUMIDOR -->
+    <div id="visao-consumidor" class="view-section active">
+        <h2>Vitrine da Banca do João</h2>
+        <div class="produto-card">
+            <div>
+                <strong>Caixa de Tomates (5kg)</strong><br>
+                <span>R$ 25,00</span>
+            </div>
+            <button onclick="fazerPedido(25.00, 'Caixa de Tomates')">Comprar com Pix</button>
+        </div>
+        <div class="produto-card">
+            <div>
+                <strong>Melancia Orgânica</strong><br>
+                <span>R$ 20,00</span>
+            </div>
+            <button onclick="fazerPedido(20.00, 'Melancia Orgânica')">Comprar com Pix</button>
+        </div>
+
+        <div id="status-pedido-cliente" style="margin-top: 20px;"></div>
+
+        <div style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 15px;">
+            <button style="background: #c62828;" onclick="enviarReclamacao()">🚨 Tive um Problema (Tomate Estragado)</button>
+        </div>
+    </div>
+
+    <!-- SEÇÃO FEIRANTE -->
+    <div id="visao-feirante" class="view-section">
+        <h2>🏪 Painel da Banca (Feirante)</h2>
+        <p>Status WebSocket: <strong id="socket-status" style="color: red;">Desconectado</strong></p>
+        
+        <h3>Últimos Pedidos Recebidos</h3>
+        <div id="lista-pedidos" style="background: #fafafa; padding: 10px; border-radius: 5px; min-height: 100px;">
+            <em>Aguardando novos pedidos na banca...</em>
+        </div>
+
+        <h3>Logs de Eventos / Impressão ESC/POS</h3>
+        <div class="log-box" id="log-box">
+            [Sistema Inicializado...]
+        </div>
+    </div>
+
+    <script>
+        const FEIRANTE_ID = 'feirante-uuid-123';
+        // Conecta ao próprio servidor atual na nuvem ou local
+        const socket = io();
+
+        socket.on('connect', () => {
+            document.getElementById('socket-status').innerText = 'Conectado (Online)';
+            document.getElementById('socket-status').style.color = 'green';
+            socket.emit('join_feirante_room', FEIRANTE_ID);
+            logarTerminal('Conectado ao servidor via WebSocket.');
+        });
+
+        socket.on('disconnect', () => {
+            document.getElementById('socket-status').innerText = 'Desconectado';
+            document.getElementById('socket-status').style.color = 'red';
+            logarTerminal('Desconectado do servidor.');
+        });
+
+        // Recebe novo pedido no painel do feirante
+        socket.on('novo_pedido_recebido', (pedido) => {
+            logarTerminal(`🔔 NOVO PEDIDO #${pedido.id} recebido de ${pedido.cliente_nome} (R$ ${pedido.total.toFixed(2)})`);
+            
+            const lista = document.getElementById('lista-pedidos');
+            if (lista.innerHTML.includes('Aguardando')) lista.innerHTML = '';
+            
+            lista.innerHTML += `
+                <div style="border-bottom: 1px solid #ccc; padding: 8px; margin-bottom: 5px;">
+                    <strong>Pedido #${pedido.id}</strong> - ${pedido.cliente_nome}<br>
+                    Total: R$ ${pedido.total.toFixed(2)} | Status: ${pedido.status}<br>
+                    <small>Pix Copia e Cola: <code>${pedido.pixCopiaECola.substring(0, 30)}...</code></small>
+                </div>
+            `;
+        });
+
+        // Recebe reclamação/problema
+        socket.on('novo_problema_notificacao', (dados) => {
+            logarTerminal(`🚨 ALERTA DE PROBLEMA! Pedido #${dados.pedido_id}: ${dados.motivo}`);
+            alert(`🚨 ALERTA NA BANCA! O cliente reclamou: ${dados.motivo}`);
+        });
+
+        function trocarVisao(visao) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            if (visao === 'consumidor') {
+                document.getElementById('visao-consumidor').classList.add('active');
+                event.target.classList.add('active');
+            } else {
+                document.getElementById('visao-feirante').classList.add('active');
+                event.target.classList.add('active');
+            }
+        }
+
+        async function fazerPedido(valor, nomeProduto) {
+            try {
+                const res = await fetch('/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        feirante_id: FEIRANTE_ID,
+                        cliente_nome: 'Cliente da Silva',
+                        total: valor,
+                        itens: [{ nome: nomeProduto, qtd: 1 }]
+                    })
+                });
+                const data = await res.json();
+                
+                document.getElementById('status-pedido-cliente').innerHTML = `
+                    <div style="background: #e8f5e9; padding: 10px; border-radius: 5px; border: 1px solid #2e7d32;">
+                        <strong>Pedido #${data.pedido.id} gerado com sucesso!</strong><br>
+                        Escaneie ou copie o Pix para pagar:<br>
+                        <textarea style="width: 100%; height: 50px; font-size: 11px;" readonly>${data.pedido.pixCopiaECola}</textarea>
+                    </div>
+                `;
+                alert('Pedido gerado! Alterne para a aba "Painel do Feirante" para ver o pedido chegando.');
+            } catch (err) {
+                alert('Erro ao criar pedido: ' + err.message);
+            }
+        }
+
+        async function enviarReclamacao() {
+            try {
+                await fetch('/api/cliente/reclamacao', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pedido_id: 1042,
+                        feirante_id: FEIRANTE_ID,
+                        motivo: 'Tomate Estragado / Amassado',
+                        comentario: 'Veio tudo machucado.'
+                    })
+                });
+                alert('Reclamação enviada! O alarme disparará no painel do feirante.');
+            } catch (err) {
+                alert('Erro ao enviar reclamação.');
+            }
+        }
+
+        function logarTerminal(texto) {
+            const box = document.getElementById('log-box');
+            const hora = new Date().toLocaleTimeString('pt-BR');
+            box.innerHTML += `[${hora}] ${texto}<br>`;
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>
