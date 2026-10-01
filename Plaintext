@@ -1,0 +1,15 @@
+feira-livre-digital/
+├── .env.example
+├── .gitignore
+├── package.json
+├── server.js
+├── database.sql
+├── services/
+│   ├── firebase.js
+│   ├── notificacaoService.js
+│   └── pixService.js
+└── public/
+    ├── index.html
+    └── sons/
+        ├── sirene.mp3
+        └── pix-recebido.mp3
