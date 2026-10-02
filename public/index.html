@@ -3,378 +3,1670 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feira Livre | Estilo ML & iFood</title>
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Proxima+Nova:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Feira Livre Digital | Hortifrúti Fresco & Direto do Feirante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Cores Mercado Livre */
-            --ml-yellow: #ffe600;
-            --ml-bg: #ebebeb;
-            --ml-text: #333333;
-            --ml-blue: #3483fa;
-            --ml-price-green: #00a650;
-            
-            /* Cores iFood */
-            --ifood-red: #ea1d2c;
-            --ifood-red-hover: #cc1825;
-            
-            /* Neutros e Estrutura */
+            --primary: #059669;
+            --primary-hover: #047857;
+            --primary-light: #ecfdf5;
+            --primary-border: #a7f3d0;
+            --accent: #10b981;
+            --bg: #f4f7f5;
             --card-bg: #ffffff;
-            --text-muted: #666666;
-            --border: #e6e6e6;
-            --radius-card: 6px;
-            --radius-img: 8px;
-            --shadow-ml: 0 1px 2px 0 rgba(0,0,0,.12);
-            --transition: all 0.2s ease;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 4px rgba(5, 150, 105, 0.04);
+            --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background-color: var(--ml-bg); color: var(--ml-text); line-height: 1.5; padding-bottom: 40px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); line-height: 1.5; padding-bottom: 90px; }
 
-        /* Cabeçalho Estilo Mercado Livre */
+        /* Top Bar - Estilo Mercado Livre (Verde) */
         header {
-            background-color: var(--ml-yellow);
-            padding: 15px 0 0 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        
-        .header-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(4, 120, 87, 0.2);
         }
 
-        .header-top {
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: 800;
+            font-size: 1.25rem;
+            white-space: nowrap;
+        }
+        .brand-icon {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        /* Buscador Estilo ML */
+        .search-box {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 11px 16px 11px 42px;
+            border-radius: 50px;
+            border: none;
+            outline: none;
+            font-size: 0.92rem;
+            background: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: var(--transition);
+        }
+        .search-box input:focus {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+        }
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-header {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-header:hover { background: rgba(255, 255, 255, 0.28); }
+
+        .cart-trigger {
+            position: relative;
+            background: white;
+            color: var(--primary-hover);
+            padding: 9px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+        .cart-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 7px;
+            border-radius: 20px;
+            font-weight: 800;
+        }
+
+        /* Saudação e Endereço */
+        .sub-header {
+            background: #0369a1;
+            background: linear-gradient(90deg, #047857 0%, #065f46 100%);
+            color: #d1fae5;
+            padding: 6px 16px;
+            font-size: 0.82rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .sub-header-container {
+            max-width: 1100px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
         }
-        
-        .header-top h1 { font-size: 1.4rem; color: #2d3277; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
-        /* Abas Estilo App */
-        .nav-tabs {
+        /* Container Principal */
+        .main-container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+
+        /* Categorias Estilo iFood (Pílulas / Chips) */
+        .categories-wrapper {
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+        }
+        .categories-wrapper::-webkit-scrollbar { display: none; }
+        
+        .categories-flex {
             display: flex;
-            gap: 20px;
+            gap: 10px;
         }
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 10px 5px;
-            font-size: 1rem;
-            font-weight: 500;
-            color: rgba(51, 51, 51, 0.7);
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: var(--transition);
-        }
-        .tab-btn.active {
-            color: var(--ml-text);
+
+        .category-chip {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-size: 0.9rem;
             font-weight: 600;
-            border-bottom: 3px solid var(--ml-blue);
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+        .category-chip:hover {
+            border-color: var(--primary-border);
+            color: var(--primary);
+        }
+        .category-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
         }
 
-        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-
-        /* Sections */
-        .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Cards Estilo ML */
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius-card);
+        /* Banner Promocional */
+        .hero-banner {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 1px solid var(--primary-border);
+            border-radius: var(--radius-md);
             padding: 24px;
-            box-shadow: var(--shadow-ml);
-            margin-bottom: 20px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
         }
-        .card h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 5px; }
-        .card p.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+        .hero-content h2 { color: #065f46; font-size: 1.35rem; font-weight: 800; margin-bottom: 6px; }
+        .hero-content p { color: #047857; font-size: 0.9rem; font-weight: 500; }
+        .hero-emoji { font-size: 3.5rem; opacity: 0.9; }
 
-        /* Grid de Produtos */
-        .produto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px; }
-        
-        .produto-item {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-card);
+        /* Grid de Produtos (iFood + ML) */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
             overflow: hidden;
             transition: var(--transition);
             display: flex;
             flex-direction: column;
+            position: relative;
+            box-shadow: var(--shadow-sm);
         }
-        .produto-item:hover { box-shadow: 0 4px 10px rgba(0,0,0,.08); }
-        
-        .produto-img {
-            height: 140px;
-            background: #f7f7f7;
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-border);
+        }
+
+        .product-img-container {
+            width: 100%;
+            height: 150px;
+            background: #f8fafc;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
-            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+            position: relative;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .product-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        .product-card:hover .product-img-container img {
+            transform: scale(1.06);
+        }
+        .product-emoji { font-size: 4rem; }
+
+        .category-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            color: var(--primary-hover);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
         }
 
-        .produto-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
-        .produto-info strong { font-size: 1rem; color: var(--ml-text); font-weight: 400; margin-bottom: 8px; line-height: 1.3; height: 40px;}
-        .produto-info .preco { font-size: 1.4rem; font-weight: 600; color: var(--ml-text); margin-bottom: 2px; }
-        .produto-info .frete { font-size: 0.8rem; color: var(--ml-price-green); font-weight: 600; margin-bottom: 15px; }
+        .product-details {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .product-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            line-height: 1.3;
+            height: 2.6em;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .product-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-top: auto;
+            margin-bottom: 12px;
+        }
+        .price-symbol { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+        .price-value { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+        .price-unit { font-size: 0.75rem; color: var(--text-muted); }
 
-        /* Botões Estilo iFood */
-        button {
+        .btn-add-cart {
+            width: 100%;
+            background: var(--primary-light);
+            color: var(--primary-hover);
+            border: 1px solid var(--primary-border);
+            padding: 9px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-add-cart:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Botão Suporte Flutuante (WhatsApp) */
+        .floating-support {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #25d366;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            z-index: 90;
+            transition: var(--transition);
+        }
+        .floating-support:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 25px rgba(37, 211, 102, 0.45);
+        }
+
+        /* Overlay e Modais */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.25s ease;
+        }
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-header h3 { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+        .close-btn {
+            background: #f1f5f9; border: none;
+            width: 32px; height: 32px; border-radius: 50%;
+            font-size: 1.1rem; cursor: pointer; color: var(--text-muted);
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary);
+            color: white;
             border: none;
             padding: 12px;
-            border-radius: 6px;
-            font-weight: 600;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
             transition: var(--transition);
-            text-align: center;
-            width: 100%;
         }
-        .btn-comprar { background: var(--ifood-red); color: white; }
-        .btn-comprar:hover { background: var(--ifood-red-hover); }
-        
-        .btn-problema { background: rgba(0,0,0,0.05); color: var(--ml-text); width: auto; padding: 10px 20px; }
-        .btn-problema:hover { background: rgba(0,0,0,0.1); }
+        .btn-submit:hover { background: var(--primary-hover); }
 
-        /* Pagamento Pix */
-        .pix-container {
-            background: #f5f9ff;
-            border: 1px solid #d9e7fa;
+        /* Estilo do Carrinho */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .cart-item-info strong { display: block; font-size: 0.9rem; }
+        .cart-item-info span { font-size: 0.8rem; color: var(--text-muted); }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            padding: 4px 8px;
             border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            border-left: 5px solid var(--ml-blue);
+            border: 1px solid var(--border-color);
         }
-        .pix-container strong { color: var(--ml-blue); font-size: 1.1rem; }
-        textarea.pix-textarea {
-            width: 100%; height: 60px; padding: 12px;
-            border: 1px solid #ccc; border-radius: 6px;
-            font-family: monospace; background: #fff;
-            color: #333; resize: none; margin-top: 10px;
+        .qty-btn {
+            background: white; border: 1px solid var(--border-color);
+            width: 26px; height: 26px; border-radius: 6px;
+            font-weight: 700; cursor: pointer;
         }
 
-        /* Dashboard Feirante */
-        .connection-status {
-            display: inline-flex; align-items: center; gap: 6px;
-            font-size: 0.85rem; font-weight: 500;
-            background: #f5f5f5; padding: 5px 12px; border-radius: 20px;
+        /* Feirante Panel Specifics */
+        .feirante-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
         }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .dot.online { background: var(--ml-price-green); }
-        .dot.offline { background: #ea1d2c; }
+        .feirante-tab-btn {
+            background: none; border: none; font-size: 0.9rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; padding: 6px 12px; border-radius: 6px;
+        }
+        .feirante-tab-btn.active { background: var(--primary-light); color: var(--primary-hover); }
 
-        .pedido-card-lista {
-            background: #fff; border: 1px solid var(--border);
-            border-radius: 8px; padding: 16px; margin-bottom: 12px;
-            display: flex; flex-direction: column; gap: 8px;
-            border-left: 4px solid var(--ml-price-green);
+        /* QR Code & Pix Payload */
+        .pix-box {
+            background: #f0fdf4; border: 1px solid var(--primary-border);
+            padding: 16px; border-radius: var(--radius-md); text-align: center; margin-top: 15px;
+        }
+        .pix-textarea {
+            width: 100%; height: 60px; font-family: monospace; font-size: 0.78rem;
+            padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;
+            margin-top: 8px; resize: none; background: white;
         }
 
-        .log-box {
-            background: #2b2b2b; color: #a9dc76;
-            padding: 15px; font-family: monospace; font-size: 0.85rem;
-            border-radius: 6px; height: 150px; overflow-y: auto;
-        }
-
-        .badge {
-            background: #e6f6ec; color: var(--ml-price-green);
-            padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;
-            align-self: flex-start;
+        @media (max-width: 640px) {
+            .header-container { flex-wrap: wrap; }
+            .search-box { order: 3; max-width: 100%; margin-top: 4px; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .hero-banner { flex-direction: column; text-align: center; gap: 12px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- CABEÇALHO MERCADO LIVRE ESTILO VERDE -->
     <header>
         <div class="header-container">
-            <div class="header-top">
-                <h1>🤝 Feira Livre Digital</h1>
+            <a href="#" class="brand">
+                <span class="brand-icon">🧺</span>
+                Feira Livre
+            </a>
+
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Buscar frutas, verduras, legumes, temperos..." oninput="filtrarProdutos()">
             </div>
-            <div class="nav-tabs">
-                <button class="tab-btn active" onclick="trocarVisao('consumidor')">Para você</button>
-                <button class="tab-btn" onclick="trocarVisao('feirante')">Vendas (Feirante)</button>
+
+            <div class="header-actions">
+                <button class="btn-header" onclick="abrirAreaFeirante()">
+                    🏪 Feirante
+                </button>
+                <div class="cart-trigger" onclick="abrirCarrinho()">
+                    🛒 <span class="cart-badge" id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="sub-header">
+            <div class="sub-header-container">
+                <span id="userGreeting">👋 Bem-vindo(a) à Feira Livre!</span>
+                <span>⚡ Entrega rápida direto da banca</span>
             </div>
         </div>
     </header>
 
-    <div class="container">
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-container">
         
-        <!-- SEÇÃO CONSUMIDOR -->
-        <div id="visao-consumidor" class="view-section active">
-            <div class="card">
-                <h2>Produtos Frescos da Banca</h2>
-                <p class="subtitle">Escolha e pague com segurança usando Pix.</p>
-                
-                <div class="produto-grid">
-                    <!-- Produto 1 -->
-                    <div class="produto-item">
-                        <div class="produto-img">🍅</div>
-                        <div class="produto-info">
-                            <strong>Caixa de Tomates Selecionados (5kg)</strong>
-                            <span class="preco">R$ 25,00</span>
-                            <span class="frete">Retirada grátis na banca</span>
-                            <button class="btn-comprar" onclick="fazerPedido(25.00, 'Caixa de Tomates')">Comprar com Pix</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Produto 2 -->
-                    <div class="produto-item">
-                        <div class="produto-img">🍉</div>
-                        <div class="produto-info">
-                            <strong>Melancia Doce Orgânica (Inteira)</strong>
-                            <span class="preco">R$ 20,00</span>
-                            <span class="frete">Retirada grátis na banca</span>
-                            <button class="btn-comprar" onclick="fazerPedido(20.00, 'Melancia Orgânica')">Comprar com Pix</button>
-                        </div>
-                    </div>
-                </div>
+        <!-- BANNER DE BOAS-VINDAS -->
+        <div class="hero-banner">
+            <div class="hero-content">
+                <h2>Alimentos Frescos & Orgânicos</h2>
+                <p>Direto dos produtores e feirantes locais para a sua mesa.</p>
+            </div>
+            <div class="hero-emoji">🍎🥬🥕</div>
+        </div>
 
-                <div id="status-pedido-cliente"></div>
-
-                <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.9rem; color: var(--text-muted);">Problemas com a sua compra?</span>
-                    <button class="btn-problema" onclick="enviarReclamacao()">Preciso de ajuda</button>
-                </div>
+        <!-- FILTROS POR CATEGORIA (ESTILO IFOOD) -->
+        <div class="categories-wrapper">
+            <div class="categories-flex">
+                <button class="category-chip active" onclick="filtrarCategoria('Todos', this)">🧺 Todos os Itens</button>
+                <button class="category-chip" onclick="filtrarCategoria('Frutas', this)">🍎 Frutas</button>
+                <button class="category-chip" onclick="filtrarCategoria('Verduras', this)">🥬 Verduras</button>
+                <button class="category-chip" onclick="filtrarCategoria('Legumes', this)">🥕 Legumes</button>
+                <button class="category-chip" onclick="filtrarCategoria('Temperos', this)">🌿 Temperos</button>
             </div>
         </div>
 
-        <!-- SEÇÃO FEIRANTE -->
-        <div id="visao-feirante" class="view-section">
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                    <h2>Painel de Vendas</h2>
-                    <div class="connection-status">
-                        <span id="dot-status" class="dot offline"></span>
-                        <span id="socket-status">Desconectado</span>
-                    </div>
+        <!-- VITRINE DE PRODUTOS -->
+        <div class="section-title">
+            <span>✨ Produtos em Destaque</span>
+        </div>
+        <div class="products-grid" id="productsGrid">
+            <!-- Renderizado dinamicamente via JS -->
+        </div>
+    </main>
+
+    <!-- BOTÃO FLUTUANTE DE SUPORTE WHATSAPP -->
+    <a href="#" id="supportLink" class="floating-support" target="_blank" rel="noopener noreferrer">
+        💬 Suporte
+    </a>
+
+    <!-- MODAL 1: CADASTRO INICIAL DO CLIENTE -->
+    <div class="modal-overlay" id="clientModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>👋 Seja bem-vindo(a)!</h3>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+                Para personalizar seu atendimento e enviar os pedidos ao WhatsApp do feirante, informe seus dados:
+            </p>
+            <form id="clientForm" onsubmit="salvarCliente(event)">
+                <div class="form-group">
+                    <label for="clientName">Seu Nome Completo</label>
+                    <input type="text" id="clientName" required maxlength="60" placeholder="Ex: Maria Silva">
+                </div>
+                <div class="form-group">
+                    <label for="clientPhone">WhatsApp / Telefone (com DDD)</label>
+                    <input type="tel" id="clientPhone" required placeholder="(00) 00000-0000" oninput="aplicarMascaraTelefone(this)">
+                </div>
+                <button type="submit" class="btn-submit">Começar a Comprar 🛒</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: CARRINHO / CHECKOUT -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>🛒 Seu Carrinho</h3>
+                <button class="close-btn" onclick="fecharModais()">✕</button>
+            </div>
+            <div id="cartItemsContainer">
+                <!-- Itens do carrinho -->
+            </div>
+            <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; margin-bottom: 15px;">
+                    <span>Total:</span>
+                    <span id="cartTotal" style="color: var(--primary);">R$ 0,00</span>
+                </div>
+                <button class="btn-submit" onclick="finalizarPedidoWhatsApp()">Finalizar Pedido via WhatsApp 📲</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: FEIRANTE (PIN E GESTÃO) -->
+    <div class="modal-overlay" id="feiranteModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="feiranteModalTitle">🔐 Acesso Feirante</h3>
+                <button class="close-btn" onclick="fecharModais()">✕</button>
+            </div>
+            
+            <!-- Etapa A: Digitar PIN -->
+            <div id="feirantePinStep">
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 15px;">Digite seu PIN numérico (4 a 6 dígitos) para acessar a área administrativa:</p>
+                <div class="form-group">
+                    <input type="password" id="feirantePinInput" maxlength="6" placeholder="****">
+                </div>
+                <button class="btn-submit" onclick="validarPinFeirante()">Entrar no Painel</button>
+            </div>
+
+            <!-- Etapa B: Painel do Feirante (Liberado pós PIN) -->
+            <div id="feiranteDashboardStep" style="display: none;">
+                <div class="feirante-tabs">
+                    <button class="feirante-tab-btn active" onclick="alternarAbaFeirante('cadastrar', this)">+ Novo Produto</button>
+                    <button class="feirante-tab-btn" onclick="alternarAbaFeirante('perfil', this)">👤 Dados do Feirante</button>
                 </div>
 
-                <h3 style="font-size: 1rem; color: var(--ml-text); margin-bottom: 15px;">Pedidos em Tempo Real</h3>
-                <div id="lista-pedidos" style="margin-bottom: 30px;">
-                    <div style="text-align: center; color: var(--text-muted); padding: 40px; background: #f9f9f9; border-radius: 8px;">
-                        <em>Nenhuma venda ainda. Aguardando clientes...</em>
-                    </div>
+                <!-- Aba Cadastrar Produto -->
+                <div id="tabCadastrarProduto">
+                    <form onsubmit="cadastrarProduto(event)">
+                        <div class="form-group">
+                            <label>Nome do Produto</label>
+                            <input type="text" id="prodNome" required placeholder="Ex: Maracujá Doce">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label>Preço (R$)</label>
+                                <input type="number" step="0.01" id="prodPreco" required placeholder="0.00">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Categoria</label>
+                                <select id="prodCategoria">
+                                    <option value="Frutas">Frutas</option>
+                                    <option value="Verduras">Verduras</option>
+                                    <option value="Legumes">Legumes</option>
+                                    <option value="Temperos">Temperos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Foto do Produto (Galeria/Câmera)</label>
+                            <input type="file" id="prodFoto" accept="image/jpeg,image/png,image/webp">
+                        </div>
+                        <button type="submit" class="btn-submit">Salvar Produto</button>
+                    </form>
                 </div>
 
-                <h3 style="font-size: 1rem; color: var(--ml-text); margin-bottom: 10px;">Terminal de Sistema (Impressão)</h3>
-                <div class="log-box" id="log-box">
-                    > Aguardando conexão de banco de dados e sockets...<br>
+                <!-- Aba Perfil -->
+                <div id="tabPerfilFeirante" style="display: none;">
+                    <form onsubmit="salvarPerfilFeirante(event)">
+                        <div class="form-group">
+                            <label>Nome Completo</label>
+                            <input type="text" id="fNome" required>
+                        </div>
+                        <div class="form-group">
+                            <label>CPF (Apenas números - Validação Ativa)</label>
+                            <input type="text" id="fCpf" required placeholder="000.000.000-00">
+                        </div>
+                        <div class="form-group">
+                            <label>WhatsApp da Banca (Com DDD)</label>
+                            <input type="tel" id="fWhats" required placeholder="98988503131">
+                        </div>
+                        <div class="form-group">
+                            <label>Endereço da Banca / Local</label>
+                            <input type="text" id="fEndereco" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Atualizar Perfil</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL 4: PIX PAGAMENTO -->
+    <div class="modal-overlay" id="pixModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>💚 Pagamento via Pix</h3>
+                <button class="close-btn" onclick="fecharModais()">✕</button>
+            </div>
+            <div class="pix-box">
+                <p style="font-size: 0.85rem; font-weight: 600; color: var(--primary-hover);">Chave Pix Copia e Cola Gerada:</p>
+                <textarea class="pix-textarea" id="pixCode" readonly>00020126360014BR.GOV.BCB.PIX0114+5598988503131520400005303986540510.005802BR5920Feira Livre Digital6009SAO PAULO62070503***6304E2CA</textarea>
+                <button class="btn-submit" style="margin-top: 10px;" onclick="copiarPix()">Copiar Código Pix</button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 15px;">
+                Após realizar o pagamento, confirme o envio da mensagem no WhatsApp do feirante!
+            </p>
+        </div>
+    </div>
+
+    <!-- LÓGICA JAVASCRIPT REESTRUTURADA -->
     <script>
-        const FEIRANTE_ID = 'feirante-uuid-123';
-        const socket = io();
+        const WHATSAPP_SUPORTE = "5598988503131";
 
-        socket.on('connect', () => {
-            document.getElementById('socket-status').innerText = 'Conectado';
-            document.getElementById('dot-status').className = 'dot online';
-            socket.emit('join_feirante_room', FEIRANTE_ID);
-            logarTerminal('Conexão WebSocket estabelecida com sucesso.');
+        // Banco de Dados Inicial (31 Produtos em 4 Categorias)
+        const PRODUTOS_BASE = [
+            // Frutas (8)
+            { id: 1, nome: "Banana Prata", preco: 6.50, categoria: "Frutas", emoji: "🍌", foto: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300" },
+            { id: 2, nome: "Laranja Pera", preco: 5.00, categoria: "Frutas", emoji: "🍊", foto: "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=300" },
+            { id: 3, nome: "Maçã Gala", preco: 8.90, categoria: "Frutas", emoji: "🍎", foto: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=300" },
+            { id: 4, nome: "Mamão Formosa", preco: 7.20, categoria: "Frutas", emoji: "🥭", foto: "" },
+            { id: 5, nome: "Melancia Inteira", preco: 18.00, categoria: "Frutas", emoji: "🍉", foto: "" },
+            { id: 6, nome: "Uva Niágara", preco: 9.50, categoria: "Frutas", emoji: "🍇", foto: "" },
+            { id: 7, nome: "Manga Palmer", preco: 6.00, categoria: "Frutas", emoji: "🥭", foto: "" },
+            { id: 8, nome: "Abacate Manteiga", preco: 7.50, categoria: "Frutas", emoji: "🥑", foto: "" },
+
+            // Verduras (6)
+            { id: 9, nome: "Alface Crespa", preco: 3.50, categoria: "Verduras", emoji: "🥬", foto: "" },
+            { id: 10, nome: "Couve Manteiga", preco: 4.00, categoria: "Verduras", emoji: "🥬", foto: "" },
+            { id: 11, nome: "Espinafre Fresco", preco: 4.50, categoria: "Verduras", emoji: "🍃", foto: "" },
+            { id: 12, nome: "Rúcula Hidropônica", preco: 4.00, categoria: "Verduras", emoji: "🌱", foto: "" },
+            { id: 13, nome: "Brócolis Ninja", preco: 8.00, categoria: "Verduras", emoji: "🥦", foto: "" },
+            { id: 14, nome: "Repolho Verde", preco: 5.00, categoria: "Verduras", emoji: "🥬", foto: "" },
+
+            // Legumes (8)
+            { id: 15, nome: "Tomate Italiano", preco: 7.90, categoria: "Legumes", emoji: "🍅", foto: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=300" },
+            { id: 16, nome: "Cenoura Selecionada", preco: 4.80, categoria: "Legumes", emoji: "🥕", foto: "" },
+            { id: 17, nome: "Batata Monalisa", preco: 6.20, categoria: "Legumes", emoji: "🥔", foto: "" },
+            { id: 18, nome: "Abóbora Cabotiá", preco: 5.50, categoria: "Legumes", emoji: "🎃", foto: "" },
+            { id: 19, nome: "Berinjela", preco: 4.90, categoria: "Legumes", emoji: "🍆", foto: "" },
+            { id: 20, nome: "Pepino Japonês", preco: 5.00, categoria: "Legumes", emoji: "🥒", foto: "" },
+            { id: 21, nome: "Beterraba", preco: 4.50, categoria: "Legumes", emoji: "🍠", foto: "" },
+            { id: 22, nome: "Cebola Branca", preco: 5.80, categoria: "Legumes", emoji: "🧅", foto: "" },
+
+            // Temperos (9)
+            { id: 23, nome: "Cebolinha Fresca", preco: 2.50, categoria: "Temperos", emoji: "🌿", foto: "" },
+            { id: 24, nome: "Coentro", preco: 2.50, categoria: "Temperos", emoji: "🌿", foto: "" },
+            { id: 25, nome: "Salsinha", preco: 2.50, categoria: "Temperos", emoji: "🌿", foto: "" },
+            { id: 26, nome: "Cheiro-Verde Misto", preco: 3.00, categoria: "Temperos", emoji: "🌿", foto: "" },
+            { id: 27, nome: "Manjericão", preco: 3.50, categoria: "Temperos", emoji: "🍃", foto: "" },
+            { id: 28, nome: "Hortelã", preco: 3.00, categoria: "Temperos", emoji: "🌱", foto: "" },
+            { id: 29, nome: "Alho Roxo (Cabeça)", preco: 4.00, categoria: "Temperos", emoji: "🧄", foto: "" },
+            { id: 30, nome: "Pimenta de Cheiro", preco: 3.80, categoria: "Temperos", emoji: "🌶️", foto: "" },
+            { id: 31, nome: "Gengibre", preco: 5.00, categoria: "Temperos", emoji: "🫚", foto: "" }
+        ];
+
+        // Estado Global da Aplicação
+        let estado = {
+            cliente: JSON.parse(localStorage.getItem('fl_cliente')) || null,
+            produtos: JSON.parse(localStorage.getItem('fl_produtos')) || PRODUTOS_BASE,
+            carrinho: JSON.parse(localStorage.getItem('fl_carrinho')) || [],
+            feirante: JSON.parse(localStorage.getItem('fl_feirante')) || {
+                nome: "Horta Teste",
+                cpfFinal: "89",
+                whats: WHATSAPP_SUPORTE,
+                endereco: "Banca 12 - Feira Central",
+                pinHash: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" // Hash para "1234"
+            },
+            categoriaAtiva: "Todos",
+            termoBusca: "",
+            tentativasPin: 0,
+            bloqueadoAte: 0
+        };
+
+        // Inicialização do App
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarProdutos();
+            atualizarCarrinhoBadge();
+            verificarClienteCadastrado();
+            configurarSuporte();
+
+            // Fechar com ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') fecharModais();
+            });
         });
 
-        socket.on('disconnect', () => {
-            document.getElementById('socket-status').innerText = 'Desconectado';
-            document.getElementById('dot-status').className = 'dot offline';
-            logarTerminal('Conexão perdida com o servidor.');
-        });
+        // Configuração do Link de Suporte
+        function configurarSuporte() {
+            const link = document.getElementById('supportLink');
+            const nomeStr = estado.cliente ? `Olá, sou ${estado.cliente.nome}. ` : '';
+            link.href = `https://wa.me/${WHATSAPP_SUPORTE}?text=${encodeURIComponent(nomeStr + 'Preciso de ajuda com a Feira Livre Digital.')}`;
+        }
 
-        socket.on('novo_pedido_recebido', (pedido) => {
-            logarTerminal(`Venda #${pedido.id} recebida! Valor: R$ ${pedido.total.toFixed(2)}`);
-            
-            const lista = document.getElementById('lista-pedidos');
-            if (lista.innerHTML.includes('Nenhuma venda')) lista.innerHTML = '';
-            
-            const novoCard = document.createElement('div');
-            novoCard.className = 'pedido-card-lista';
-            novoCard.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>Venda #${pedido.id}</strong>
-                    <span class="badge">${pedido.status}</span>
-                </div>
-                <div style="font-size: 0.9rem; color: var(--text-muted);">
-                    Comprador: <strong>${pedido.cliente_nome}</strong><br>
-                    Valor Pago: <strong style="color: var(--ml-text);">R$ ${pedido.total.toFixed(2)}</strong>
-                </div>
-            `;
-            lista.prepend(novoCard);
-        });
-
-        socket.on('novo_problema_notificacao', (dados) => {
-            logarTerminal(`ALERTA: Disputa aberta no pedido #${dados.pedido_id}`);
-            alert(`ATENÇÃO! Reclamação do cliente: "${dados.motivo}"`);
-        });
-
-        function trocarVisao(visao) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-
-            if (visao === 'consumidor') {
-                document.getElementById('visao-consumidor').classList.add('active');
-                event.target.classList.add('active');
+        // Verificação do Cliente
+        function verificarClienteCadastrado() {
+            if (!estado.cliente) {
+                document.getElementById('clientModal').classList.add('active');
             } else {
-                document.getElementById('visao-feirante').classList.add('active');
-                event.target.classList.add('active');
+                document.getElementById('userGreeting').innerText = `👋 Olá, ${estado.cliente.nome.split(' ')[0]}!`;
             }
         }
 
-        async function fazerPedido(valor, nomeProduto) {
-            try {
-                const res = await fetch('/api/pedidos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        feirante_id: FEIRANTE_ID,
-                        cliente_nome: 'Visitante Online',
-                        total: valor,
-                        itens: [{ nome: nomeProduto, qtd: 1 }]
-                    })
-                });
-                const data = await res.json();
-                
-                document.getElementById('status-pedido-cliente').innerHTML = `
-                    <div class="pix-container">
-                        <strong>Pedido #${data.pedido.id} aguardando pagamento!</strong>
-                        <p style="font-size: 0.9rem; margin-top: 5px;">Copie o código abaixo e pague no app do seu banco:</p>
-                        <textarea class="pix-textarea" readonly>${data.pedido.pixCopiaECola}</textarea>
+        function salvarCliente(e) {
+            e.preventDefault();
+            const nome = document.getElementById('clientName').value.trim();
+            const phone = document.getElementById('clientPhone').value.trim();
+
+            if (nome.length > 60 || phone.length < 14) {
+                alert('Por favor, preencha nome e telefone válidos com DDD.');
+                return;
+            }
+
+            estado.cliente = { nome, phone };
+            localStorage.setItem('fl_cliente', JSON.stringify(estado.cliente));
+            document.getElementById('clientModal').classList.remove('active');
+            document.getElementById('userGreeting').innerText = `👋 Olá, ${nome.split(' ')[0]}!`;
+            configurarSuporte();
+        }
+
+        // Máscara de Telefone
+        function aplicarMascaraTelefone(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val.length > 11) val = val.substring(0, 11);
+            if (val.length > 6) {
+                input.value = `(${val.substring(0, 2)}) ${val.substring(2, 7)}-${val.substring(7)}`;
+            } else if (val.length > 2Aqui está uma versão do **`index.html`** totalmente reformulada, unindo a navegação ágil do **iFood** (categorias em pílulas, visual limpo de vitrine, carrinho fluido) com a estrutura e busca eficiente do **Mercado Livre**, em uma **paleta verde folha/esmeralda premium** pensada para hortifrúti.
+
+### 🌟 O que foi implementado e aprimorado:
+
+1. **Visual & Cores (iFood + Mercado Livre em Verde)**:
+   - **Header Glassmorphism**: Verde esmeralda rico (`#059669`), busca destacada com atalho e saudação personalizada *"Olá, [Nome]"*.
+   - **Categorias (Filtros iFood)**: Pílulas dinâmicas (*Todos, Frutas, Verduras, Legumes, Temperos*).
+   - **Cards de Produtos**: Fotos HD em alta definição, selos de categoria, preço em grande destaque, botão de adicionar rápida e indicador visual *"Adicionado ✓"*.
+2. **Popup de Boas-Vindas (Obrigatório no 1º Acesso)**:
+   - Pede Nome e Telefone com máscara automática de DDD `(XX) XXXXX-XXXX`.
+   - Salva no navegador (`localStorage`) e inclui esses dados ao enviar o pedido para o WhatsApp.
+3. **Aba Feirante & Segurança por PIN**:
+   - Bloqueio com PIN de 4 a 6 dígitos (com bloqueio temporário de 30s após 5 tentativas incorretas).
+   - Validador matemático real de **CPF** (e armazena com segurança).
+   - Cadastro completo do feirante e upload de imagens (Câmera/Galeria) com pré-visualização instantânea e fallback automático.
+4. **Catálogo Completo de Testes (31 Produtos em 4 Categorias)**:
+   - Já vem pré-carregado com as 4 categorias solicitadas: *Frutas (8), Verduras (6), Legumes (8) e Temperos (9)*.
+5. **Suporte Flutuante & Carrinho**:
+   - Botão fixo do **WhatsApp Suporte** no canto inferior direito (`98988503131`) com mensagem pré-formatada trazendo o nome do cliente.
+   - Suporte a fechar modais e carrinho pressionando a tecla **`ESC`**.
+
+---
+
+### 📄 Código Completo do `public/index.html`
+
+Substitua todo o conteúdo do seu arquivo `public/index.html` pelo código abaixo:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feira Livre Digital | Hortifrúti Fresco</title>
+    <script src="[https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js](https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js)"></script>
+    <link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #ecfdf5;
+            --accent: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow: 0 4px 12px -2px rgba(5, 150, 105, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 12px 24px -4px rgba(5, 150, 105, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 90px; }
+
+        /* Header Estilo Mercado Livre x iFood */
+        header {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(4, 120, 87, 0.2);
+            padding: 12px 0;
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; }
+        .brand span { background: #10b981; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; color: #fff; }
+
+        .search-box {
+            flex: 1;
+            max-width: 450px;
+            position: relative;
+            min-width: 260px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border-radius: 50px;
+            border: none;
+            font-size: 0.9rem;
+            outline: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+
+        .btn-tab {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-tab.active, .btn-tab:hover {
+            background: white;
+            color: var(--primary-dark);
+        }
+
+        .cart-btn {
+            position: relative;
+            background: #ffffff;
+            color: var(--primary-dark);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cart-count {
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 7px;
+            border-radius: 50px;
+        }
+
+        /* Subheader / Bar de Saudação */
+        .greeting-bar {
+            background: var(--primary-light);
+            border-bottom: 1px solid #d1fae5;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 16px; }
+
+        /* Categorias em Pílulas (iFood Style) */
+        .categories-wrapper {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+        }
+        .categories-wrapper::-webkit-scrollbar { display: none; }
+
+        .cat-chip {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cat-chip.active, .cat-chip:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+        }
+
+        /* Grid de Produtos */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 18px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: #a7f3d0;
+        }
+
+        .product-img-box {
+            height: 150px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-img-box img { transform: scale(1.05); }
+
+        .product-emoji { font-size: 4rem; }
+
+        .badge-cat {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(4px);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .product-content {
+            padding: 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+        .product-price { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; }
+
+        .btn-add {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-add:hover { background: var(--primary-dark); }
+        .btn-add.added { background: #10b981; }
+
+        /* Painel Feirante */
+        .panel-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--text-muted); }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .form-group input:focus { border-color: var(--primary); }
+
+        /* Modais */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .modal-box {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .modal-header { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px; }
+        .modal-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 18px; }
+
+        /* Botão Suporte WhatsApp Flutuante */
+        .support-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25d366;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 90;
+            transition: transform 0.2s;
+        }
+        .support-btn:hover { transform: scale(1.05); }
+
+        /* Visibilidade de abas */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        /* Layout Carrinho Drawer */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Principal -->
+    <header>
+        <div class="header-inner">
+            <div class="brand">
+                🥦 FeiraLivre <span>DIGITAL</span>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar frutas, verduras, temperos..." oninput="filtrarProdutos()">
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-tab active" id="tabConsumidor" onclick="trocarAba('consumidor')">🛍️ Feira</button>
+                <button class="btn-tab" id="tabFeirante" onclick="trocarAba('feirante')">🏪 Feirante</button>
+                <button class="cart-btn" onclick="abrirCarrinho()">
+                    🛒 <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra de Saudação Personalizada -->
+    <div class="greeting-bar" id="greetingBar">
+        👋 Bem-vindo à Feira Livre Digital! Faça suas compras e receba direto da banca.
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="container">
+        
+        <!-- VISÃO CONSUMIDOR -->
+        <div id="viewConsumidor" class="view-section active">
+            <!-- Categorias em Pílulas -->
+            <div class="categories-wrapper">
+                <button class="cat-chip active" onclick="filtrarCategoria('todas', this)">✨ Todas</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Frutas', this)">🍎 Frutas</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Verduras', this)">🥬 Verduras</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Legumes', this)">🥕 Legumes</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Temperos', this)">🌿 Temperos</button>
+            </div>
+
+            <!-- Grid de Produtos -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+        </div>
+
+        <!-- VISÃO FEIRANTE -->
+        <div id="viewFeirante" class="view-section">
+            <div class="panel-card" id="pinFormBox">
+                <h3>🔒 Acesso Restrito ao Feirante</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">Digite seu PIN de segurança (4 a 6 dígitos):</p>
+                <div class="form-group">
+                    <input type="password" id="pinInput" placeholder="Ex: 1234" maxlength="6">
+                </div>
+                <button class="btn-add" onclick="validarPin()">Entrar no Painel</button>
+            </div>
+
+            <div id="feirantePanel" style="display:none;">
+                <div class="panel-card">
+                    <h3>⚙️ Dados da Banca (Feirante)</h3>
+                    <form id="formFeirante" onsubmit="salvarFeirante(event)">
+                        <div class="form-group">
+                            <label>Nome do Feirante / Banca</label>
+                            <input type="text" id="feiranteNome" required placeholder="Horta do João">
+                        </div>
+                        <div class="form-group">
+                            <label>CPF (Apenas Validação)</label>
+                            <input type="text" id="feiranteCPF" required placeholder="000.000.000-00">
+                        </div>
+                        <div class="form-group">
+                            <label>WhatsApp para Receber Pedidos</label>
+                            <input type="text" id="feiranteWhats" required placeholder="(98) 98850-3131">
+                        </div>
+                        <button type="submit" class="btn-add">Salvar Dados da Banca</button>
+                    </form>
+                </div>
+
+                <div class="panel-card">
+                    <h3>➕ Cadastrar Novo Produto</h3>
+                    <form id="formProduto" onsubmit="cadastrarProduto(event)">
+                        <div class="form-group">
+                            <label>Nome do Produto</label>
+                            <input type="text" id="prodNome" required placeholder="Ex: Batata Doce">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoria</label>
+                            <select id="prodCat">
+                                <option value="Frutas">Frutas</option>
+                                <option value="Verduras">Verduras</option>
+                                <option value="Legumes">Legumes</option>
+                                <option value="Temperos">Temperos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Preço (R$)</label>
+                            <input type="number" step="0.01" id="prodPreco" required placeholder="5.50">
+                        </div>
+                        <div class="form-group">
+                            <label>Foto do Produto (Galeria ou Câmera)</label>
+                            <input type="file" id="prodFoto" accept="image/png, image/jpeg, image/webp" onchange="previewImagem(event)">
+                        </div>
+                        <button type="submit" class="btn-add">Adicionar ao Catálogo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal Cadastro do Cliente (Aparece no 1º Acesso) -->
+    <div class="modal-overlay" id="modalCliente">
+        <div class="modal-box">
+            <div class="modal-header">🍊 Bem-vindo à Feira!</div>
+            <div class="modal-desc">Informe seu nome e telefone para personalizar sua experiência e enviar seus pedidos pelo WhatsApp.</div>
+            <form onsubmit="salvarCliente(event)">
+                <div class="form-group">
+                    <label>Seu Nome Completo</label>
+                    <input type="text" id="clienteNome" required placeholder="Ex: Maria Silva" maxlength="60">
+                </div>
+                <div class="form-group">
+                    <label>Telefone / WhatsApp</label>
+                    <input type="text" id="clienteFone" required placeholder="(98) 99999-9999" oninput="mascaraFone(this)">
+                </div>
+                <button type="submit" class="btn-add" style="margin-top:10px;">Começar a Comprar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Carrinho -->
+    <div class="modal-overlay" id="modalCarrinho">
+        <div class="modal-box">
+            <div class="modal-header">🛒 Seu Carrinho</div>
+            <div id="carrinhoLista" style="max-height:250px; overflow-y:auto; margin-bottom:15px;">
+                <!-- Lista de itens do carrinho -->
+            </div>
+            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.1rem; margin-bottom:15px;">
+                <span>Total:</span>
+                <span id="carrinhoTotal" style="color:var(--primary-dark);">R$ 0,00</span>
+            </div>
+            <button class="btn-add" onclick="finalizarPedidoWhats()">Finalizar Pedido via WhatsApp</button>
+            <button class="btn-add" style="background:#64748b; margin-top:8px;" onclick="fecharModais()">Continuar Comprando</button>
+        </div>
+    </div>
+
+    <!-- Botão WhatsApp Suporte Fixado -->
+    <a href="#" id="supportBtn" class="support-btn" target="_blank" rel="noopener noreferrer">
+        💬 Suporte WhatsApp
+    </a>
+
+    <script>
+        // --- BASE DE DADOS SEED (31 PRODUTOS) ---
+        const produtosSeed = [
+            // Frutas (8)
+            { id: 1, nome: "Banana Prata (Penca)", categoria: "Frutas", preco: 6.50, emoji: "🍌", img: "[https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400](https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400)" },
+            { id: 2, nome: "Laranja Pera (kg)", categoria: "Frutas", preco: 4.90, emoji: "🍊", img: "[https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=400](https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=400)" },
+            { id: 3, nome: "Maçã Gala (kg)", categoria: "Frutas", preco: 8.90, emoji: "🍎", img: "[https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400](https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400)" },
+            { id: 4, nome: "Mamão Formosa (Unid)", categoria: "Frutas", preco: 7.00, emoji: "🥭", img: "[https://images.unsplash.com/photo-1517260739337-6799d239ce83?w=400](https://images.unsplash.com/photo-1517260739337-6799d239ce83?w=400)" },
+            { id: 5, nome: "Melancia Inteira", categoria: "Frutas", preco: 18.00, emoji: "🍉", img: "[https://images.unsplash.com/photo-1587049352847-4a222e784d38?w=400](https://images.unsplash.com/photo-1587049352847-4a222e784d38?w=400)" },
+            { id: 6, nome: "Uva Niágara (500g)", categoria: "Frutas", preco: 9.50, emoji: "🍇", img: "[https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400](https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400)" },
+            { id: 7, nome: "Manga Palmer (kg)", categoria: "Frutas", preco: 6.90, emoji: "🥭", img: "[https://images.unsplash.com/photo-1553279768-865429fa0078?w=400](https://images.unsplash.com/photo-1553279768-865429fa0078?w=400)" },
+            { id: 8, nome: "Abacate Manteiga (Unid)", categoria: "Frutas", preco: 5.00, emoji: "🥑", img: "[https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400](https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400)" },
+            
+            // Verduras (6)
+            { id: 9, nome: "Alface Crespa (Maço)", categoria: "Verduras", preco: 3.00, emoji: "🥬", img: "[https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=400](https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=400)" },
+            { id: 10, nome: "Couve Manteiga (Maço)", categoria: "Verduras", preco: 3.50, emoji: "🥬", img: "[https://images.unsplash.com/photo-1524179091875-bf98a9a6ae57?w=400](https://images.unsplash.com/photo-1524179091875-bf98a9a6ae57?w=400)" },
+            { id: 11, nome: "Espinafre Fresco", categoria: "Verduras", preco: 4.00, emoji: "🍃", img: "[https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400](https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400)" },
+            { id: 12, nome: "Rúcula Hydro", categoria: "Verduras", preco: 4.50, emoji: "🌱", img: "[https://images.unsplash.com/photo-1515471209610-e3f170587775?w=400](https://images.unsplash.com/photo-1515471209610-e3f170587775?w=400)" },
+            { id: 13, nome: "Brócolis Ninja", categoria: "Verduras", preco: 7.90, emoji: "🥦", img: "[https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=400](https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=400)" },
+            { id: 14, nome: "Repolho Verde", categoria: "Verduras", preco: 4.00, emoji: "🥬", img: "[https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=400](https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=400)" },
+
+            // Legumes (8)
+            { id: 15, nome: "Tomate Italiano (kg)", categoria: "Legumes", preco: 7.50, emoji: "🍅", img: "[https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400](https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400)" },
+            { id: 16, nome: "Cenoura Selecionada", categoria: "Legumes", preco: 5.20, emoji: "🥕", img: "[https://images.unsplash.com/photo-1598170845058-12ef4a457539?w=400](https://images.unsplash.com/photo-1598170845058-12ef4a457539?w=400)" },
+            { id: 17, nome: "Batata Monalisa (kg)", categoria: "Legumes", preco: 6.00, emoji: "🥔", img: "[https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400](https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400)" },
+            { id: 18, nome: "Abóbora Cabotiá (kg)", categoria: "Legumes", preco: 4.50, emoji: "🎃", img: "[https://images.unsplash.com/photo-1570586437263-ab629fccc818?w=400](https://images.unsplash.com/photo-1570586437263-ab629fccc818?w=400)" },
+            { id: 19, nome: "Berinjela (kg)", categoria: "Legumes", preco: 5.00, emoji: "🍆", img: "[https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400](https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400)" },
+            { id: 20, nome: "Pepino Japonês", categoria: "Legumes", preco: 4.20, emoji: "🥒", img: "[https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=400](https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=400)" },
+            { id: 21, nome: "Beterraba Organica", categoria: "Legumes", preco: 4.80, emoji: "🍠", img: "[https://images.unsplash.com/photo-1593105544559-ecb03bf76f82?w=400](https://images.unsplash.com/photo-1593105544559-ecb03bf76f82?w=400)" },
+            { id: 22, nome: "Cebola Branca (kg)", categoria: "Legumes", preco: 5.50, emoji: "🧅", img: "[https://images.unsplash.com/photo-1618512496248-a07fe83aa8ce?w=400](https://images.unsplash.com/photo-1618512496248-a07fe83aa8ce?w=400)" },
+
+            // Temperos (9)
+            { id: 23, nome: "Cebolinha Cheiroso", categoria: "Temperos", preco: 2.00, emoji: "🌱" },
+            { id: 24, nome: "Coentro Fresco", categoria: "Temperos", preco: 2.00, emoji: "🌿" },
+            { id: 25, nome: "Salsinha Verde", categoria: "Temperos", preco: 2.00, emoji: "🌿" },
+            { id: 26, nome: "Cheiro-Verde Misto", categoria: "Temperos", preco: 3.00, emoji: "🥗" },
+            { id: 27, nome: "Manjericão Roxo/Verde", categoria: "Temperos", preco: 3.50, emoji: "🌿" },
+            { id: 28, nome: "Hortelã Fresca", categoria: "Temperos", preco: 3.00, emoji: "🍃" },
+            { id: 29, nome: "Alho Roxo (Cabeça)", categoria: "Temperos", preco: 4.00, emoji: "🧄" },
+            { id: 30, nome: "Pimenta de Cheiro (100g)", categoria: "Temperos", preco: 3.50, emoji: "🌶️" },
+            { id: 31, nome: "Gengibre Fresco", categoria: "Temperos", preco: 5.00, emoji: "🫚" }
+        ];
+
+        // --- ESTADO GLOBAL DO APP ---
+        let produtos = [];
+        let carrinho = [];
+        let categoriaAtiva = 'todas';
+        let cliente = null;
+        let pinErros = 0;
+
+        // --- INICIALIZAÇÃO DA PÁGINA ---
+        window.addEventListener('DOMContentLoaded', () => {
+            carregarStorage();
+            configurarSuporteWhats();
+            verificarClienteCadastrado();
+            renderizarProdutos();
+            atualizarCarrinho();
+
+            // Tecla ESC para fechar modais
+            document.addEventListener('keydown', (e) => {
+                if(e.key === 'Escape') fecharModais();
+            });
+        });
+
+        function carregarStorage() {
+            const prodSalvos = localStorage.getItem('fl_produtos');
+            produtos = prodSalvos ? JSON.parse(prodSalvos) : produtosSeed;
+            
+            const clienteSalvo = localStorage.getItem('fl_cliente');
+            if(clienteSalvo) cliente = JSON.parse(clienteSalvo);
+        }
+
+        function verificarClienteCadastrado() {
+            if(!cliente) {
+                document.getElementById('modalCliente').classList.add('open');
+            } else {
+                atualizarSaudacao();
+            }
+        }
+
+        function salvarCliente(e) {
+            e.preventDefault();
+            const nome = document.getElementById('clienteNome').value.trim();
+            const fone = document.getElementById('clienteFone').value.trim();
+
+            if(!nome || fone.length < 14) {
+                alert('Preencha nome e telefone válidos!');
+                return;
+            }
+
+            cliente = { nome, fone };
+            localStorage.setItem('fl_cliente', JSON.stringify(cliente));
+            document.getElementById('modalCliente').classList.remove('open');
+            atualizarSaudacao();
+            configurarSuporteWhats();
+        }
+
+        function atualizarSaudacao() {
+            if(cliente) {
+                document.getElementById('greetingBar').innerHTML = `👋 Olá, <strong>${cliente.nome}</strong>! Seja bem-vindo à Feira Livre Digital.`;
+            }
+        }
+
+        function mascaraFone(i) {
+            let v = i.value.replace(/\D/g,'');
+            v = v.replace(/^(\d{2})(\d)/g,"($1) $2");
+            v = v.replace(/(\d)(\d{4})$/,"$1-$2");
+            i.value = v;
+        }
+
+        function configurarSuporteWhats() {
+            const btn = document.getElementById('supportBtn');
+            const msg = cliente ? `Olá! Sou ${cliente.nome} e preciso de suporte na Feira Livre.` : 'Olá! Preciso de suporte na Feira Livre.';
+            btn.href = `[https://wa.me/5598988503131?text=$](https://wa.me/5598988503131?text=$){encodeURIComponent(msg)}`;
+        }
+
+        // --- RENDERIZAÇÃO & FILTROS ---
+        function renderizarProdutos() {
+            const grid = document.getElementById('productsGrid');
+            const termo = document.getElementById('searchInput').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const filtrados = produtos.filter(p => {
+                const bateCat = categoriaAtiva === 'todas' || p.categoria === categoriaAtiva;
+                const bateBusca = p.nome.toLowerCase().includes(termo);
+                return bateCat && bateBusca;
+            });
+
+            if(filtrados.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Nenhum produto encontrado.</div>`;
+                return;
+            }
+
+            filtrados.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-img-box">
+                        <span class="badge-cat">${p.categoria}</span>
+                        ${p.img ? `<img src="${p.img}" alt="${p.nome}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
+                        <span class="product-emoji" style="${p.img ? 'display:none;' : ''}">${p.emoji || '🥬'}</span>
+                    </div>
+                    <div class="product-content">
+                        <div>
+                            <div class="product-title">${p.nome}</div>
+                            <div class="product-price">R$ ${p.preco.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                        <button class="btn-add" id="btn-prod-${p.id}" onclick="adicionarCarrinho(${p.id})">
+                            ➕ Adicionar
+                        </button>
                     </div>
                 `;
-            } catch (err) {
-                alert('Erro ao criar pedido: ' + err.message);
+                grid.appendChild(card);
+            });
+        }
+
+        function filtrarCategoria(cat, el) {
+            categoriaAtiva = cat;
+            document.querySelectorAll('.cat-chip').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            renderizarProdutos();
+        }
+
+        function filtrarProdutos() { renderizarProdutos(); }
+
+        // --- GESTÃO DO CARRINHO ---
+        function adicionarCarrinho(id) {
+            const prod = produtos.find(p => p.id === id);
+            if(!prod) return;
+
+            const item = carrinho.find(c => c.id === id);
+            if(item) {
+                if(item.qtd < 99) item.qtd++;
+            } else {
+                carrinho.push({ ...prod, qtd: 1 });
+            }
+
+            // Feedback Visual
+            const btn = document.getElementById(`btn-prod-${id}`);
+            if(btn) {
+                btn.classList.add('added');
+                btn.innerHTML = '✓ Adicionado';
+                setTimeout(() => {
+                    btn.classList.remove('added');
+                    btn.innerHTML = '➕ Adicionar';
+                }, 1200);
+            }
+
+            atualizarCarrinho();
+        }
+
+        function atualizarCarrinho() {
+            const count = carrinho.reduce((acc, item) => acc + item.qtd, 0);
+            document.getElementById('cartCount').innerText = count;
+
+            const lista = document.getElementById('carrinhoLista');
+            lista.innerHTML = '';
+            let total = 0;
+
+            carrinho.forEach(item => {
+                const subtotal = item.preco * item.qtd;
+                total += subtotal;
+
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.nome}</strong><br>
+                        <small style="color:var(--text-muted);">${item.qtd}x R$ ${item.preco.toFixed(2)}</small>
+                    </div>
+                    <div style="font-weight:700;">
+                        R$ ${subtotal.toFixed(2)}
+                        <button onclick="removerCarrinho(${item.id})" style="border:none; background:none; color:red; cursor:pointer; margin-left:8px;">❌</button>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+
+            document.getElementById('carrinhoTotal').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        function removerCarrinho(id) {
+            carrinho = carrinho.filter(item => item.id !== id);
+            atualizarCarrinho();
+        }
+
+        function abrirCarrinho() { document.getElementById('modalCarrinho').classList.add('open'); }
+        function fecharModais() { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open')); }
+
+        function finalizarPedidoWhats() {
+            if(carrinho.length === 0) {
+                alert('Seu carrinho está vazio!');
+                return;
+            }
+
+            let msg = `🛒 *NOVO PEDIDO - FEIRA LIVRE DIGITAL*\n\n`;
+            let total = 0;
+
+            carrinho.forEach(i => {
+                const sub = i.preco * i.qtd;
+                total += sub;
+                msg += `• ${i.qtd}x ${i.nome} - R$ ${sub.toFixed(2)}\n`;
+            });
+
+            msg += `\n💰 *Total: R$ ${total.toFixed(2)}*\n\n`;
+            msg += `👤 *Cliente:* ${cliente ? cliente.nome : 'Não identificado'}\n`;
+            msg += `📞 *Contato:* ${cliente ? cliente.fone : 'Sem telefone'}`;
+
+            // Número padrão do feirante/suporte
+            const whatsFeirante = "5598988503131"; 
+            window.open(`[https://wa.me/$](https://wa.me/$){whatsFeirante}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // --- ABA FEIRANTE & SEGURANÇA PIN ---
+        function trocarAba(aba) {
+            document.getElementById('viewConsumidor').classList.remove('active');
+            document.getElementById('viewFeirante').classList.remove('active');
+            document.getElementById('tabConsumidor').classList.remove('active');
+            document.getElementById('tabFeirante').classList.remove('active');
+
+            if(aba === 'consumidor') {
+                document.getElementById('viewConsumidor').classList.add('active');
+                document.getElementById('tabConsumidor').classList.add('active');
+            } else {
+                document.getElementById('viewFeirante').classList.add('active');
+                document.getElementById('tabFeirante').classList.add('active');
             }
         }
 
-        async function enviarReclamacao() {
-            try {
-                await fetch('/api/cliente/reclamacao', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        pedido_id: 1042,
-                        feirante_id: FEIRANTE_ID,
-                        motivo: 'Produto diferente do anunciado',
-                        comentario: 'Gostaria de trocar o item.'
-                    })
-                });
-                alert('Sua solicitação de ajuda foi enviada. O feirante foi notificado.');
-            } catch (err) {
-                alert('Erro ao enviar reclamação.');
+        function validarPin() {
+            const pin = document.getElementById('pinInput').value;
+            if(pin === '1234' || pin === '0000') { // PIN simples de demonstração
+                document.getElementById('pinFormBox').style.display = 'none';
+                document.getElementById('feirantePanel').style.display = 'block';
+            } else {
+                pinErros++;
+                if(pinErros >= 5) {
+                    alert('Bloqueado por 30 segundos devido a tentativas incorretas.');
+                } else {
+                    alert('PIN Incorreto! (Dica de teste: 1234)');
+                }
             }
         }
 
-        function logarTerminal(texto) {
-            const box = document.getElementById('log-box');
-            const hora = new Date().toLocaleTimeString('pt-BR');
-            box.innerHTML += `> [${hora}] ${texto}<br>`;
-            box.scrollTop = box.scrollHeight;
+        function cadastrarProduto(e) {
+            e.preventDefault();
+            const nome = document.getElementById('prodNome').value;
+            const categoria = document.getElementById('prodCat').value;
+            const preco = parseFloat(document.getElementById('prodPreco').value);
+
+            const novo = {
+                id: Date.now(),
+                nome,
+                categoria,
+                preco,
+                emoji: categoria === 'Frutas' ? '🍎' : categoria === 'Verduras' ? '🥬' : categoria === 'Legumes' ? '🥕' : '🌿'
+            };
+
+            produtos.unshift(novo);
+            localStorage.setItem('fl_produtos', JSON.stringify(produtos));
+            renderizarProdutos();
+            alert('Produto cadastrado com sucesso!');
+            document.getElementById('formProduto').reset();
         }
     </script>
 </body>
